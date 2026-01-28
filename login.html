@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Expense F | Login</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+*{box-sizing:border-box;font-family:Poppins}
+body{
+  margin:0;min-height:100vh;
+  display:flex;justify-content:center;align-items:center;
+  background:radial-gradient(circle at top,#6366f1,#020617);
+}
+.auth{
+  width:360px;
+  background:#020617;
+  padding:30px;
+  border-radius:22px;
+  box-shadow:
+    0 0 40px rgba(99,102,241,.9),
+    inset 0 0 30px rgba(99,102,241,.4);
+}
+h2{text-align:center;color:#fff}
+input{
+  width:100%;padding:14px;margin-top:12px;
+  border-radius:14px;border:none;outline:none;
+}
+button{
+  width:100%;padding:14px;margin-top:18px;
+  border-radius:14px;border:none;
+  background:#6366f1;color:#fff;font-weight:600;
+}
+.toggle{color:#c7d2fe;text-align:center;margin-top:12px;cursor:pointer}
+.eye{position:absolute;right:20px;top:50%;transform:translateY(-50%);cursor:pointer}
+.wrap{position:relative}
+#error{color:#f87171;text-align:center;display:none;margin-top:10px}
+</style>
+</head>
+<body>
+
+<div class="auth">
+  <h2 id="title">Register</h2>
+  <input id="user" placeholder="Username">
+  <div class="wrap">
+    <input id="pass" type="password" placeholder="Password">
+    <span class="eye" onclick="eye()">👁</span>
+  </div>
+  <div id="error">Invalid details</div>
+  <button onclick="auth()">Register</button>
+  <div class="toggle" onclick="toggle()">Already have account? Login</div>
+</div>
+
+<script>
+let isLogin=false;
+let users=JSON.parse(localStorage.getItem("users"))||{};
+
+function toggle(){
+  isLogin=!isLogin;
+  title.innerText=isLogin?"Login":"Register";
+  document.querySelector("button").innerText=isLogin?"Login":"Register";
+}
+function eye(){
+  pass.type=pass.type==="password"?"text":"password";
+}
+function auth(){
+  let u=user.value,p=pass.value;
+  if(!u||!p)return;
+  if(isLogin){
+    if(users[u]&&users[u].pass===p){
+      localStorage.setItem("currentUser",u);
+      location.href="expense.html";
+    }else error.style.display="block";
+  }else{
+    if(users[u]){error.innerText="User exists";error.style.display="block";return;}
+    users[u]={pass:p,expenses:[]};
+    localStorage.setItem("users",JSON.stringify(users));
+    toggle();
+  }
+}
+</script>
+</body>
+</html>

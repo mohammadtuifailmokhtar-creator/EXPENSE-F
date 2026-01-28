@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Expense F | Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+/* 🔐 LOGIN GUARD */
+if(!localStorage.getItem("currentUser")){
+  location.href="login.html";
+}
+</script>
+
+<style>
+:root{
+  --primary:#6366f1;
+  --bg:#f1f5ff;
+}
+*{box-sizing:border-box;font-family:Poppins}
+
+body{margin:0;background:var(--bg)}
+
+/* HEADER */
+header{
+  background:var(--primary);
+  color:#fff;
+  padding:16px 20px;
+  display:flex;
+  align-items:center;
+  gap:15px;
+  box-shadow:0 8px 30px rgba(99,102,241,.5);
+}
+#menuBtn{font-size:24px;cursor:pointer}
+
+/* MENU */
+.menu{
+  display:none;
+  flex-direction:column;
+  background:#fff;
+  box-shadow:0 20px 40px rgba(0,0,0,.25);
+}
+.menu button{
+  padding:16px;
+  text-align:left;
+  border:none;
+  background:none;
+  font-size:15px;
+  cursor:pointer;
+}
+.menu button.active,
+.menu button:hover{
+  background:var(--primary);
+  color:#fff;
+}
+
+/* MAIN */
+.main{padding:22px}
+.page{display:none}
+.page.active{display:block}
+
+/* CARD */
+.card{
+  background:#fff;
+  border-radius:22px;
+  padding:22px;
+  margin-bottom:25px;
+  box-shadow:0 15px 40px rgba(99,102,241,.18);
+}
+
+/* INPUTS */
+input,select{
+  width:100%;
+  padding:14px;
+  margin-top:12px;
+  border-radius:14px;
+  border:1px solid #ddd;
+}
+button.action{
+  width:100%;
+  margin-top:18px;
+  padding:14px;
+  border:none;
+  border-radius:16px;
+  background:var(--primary);
+  color:#fff;
+  font-size:16px;
+  font-weight:600;
+  cursor:pointer;
+  box-shadow:0 10px 30px rgba(99,102,241,.6);
+}
+
+/* STATS */
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+  margin-top:22px;
+}
+.stat{text-align:center;background:#f8f9ff;padding:14px;border-radius:16px}
+.stat h3{margin:0;color:var(--primary)}
+
+/* CHART SIZE */
+.chart-box{max-width:320px;margin:0 auto}
+@media(max-width:600px){
+  .stats{grid-template-columns:1fr}
+  .chart-box{max-width:260px}
+}
+/* WELCOME POPUP */
+#welcomeToast{
+  position:fixed;
+  top:18px;
+  left:50%;
+  transform:translateX(-50%);
+  background:linear-gradient(135deg,#6366f1,#818cf8);
+  color:#fff;
+  padding:14px 26px;
+  border-radius:30px;
+  font-size:14px;
+  box-shadow:0 15px 40px rgba(99,102,241,.6);
+  opacity:0;
+  z-index:9999;
+  pointer-events:none;
+  animation:welcomeAnim 4s ease forwards;
+}
+
+@keyframes welcomeAnim{
+  0%{opacity:0;top:0}
+  15%{opacity:1;top:18px}
+  85%{opacity:1}
+  100%{opacity:0;top:0}
+}
+
+</style>
+</head>
+
+<body>
+  <div id="welcomeToast">👋 Welcome to <b>EXPENSE F</b></div>
+
+
+<header>
+  <span id="menuBtn">☰</span>
+  <h3>Expense F</h3>
+</header>
+
+<div class="menu" id="menu">
+  <button class="active" data-page="dash">🏠 Dashboard</button>
+  <button data-page="history">📜 History</button>
+  <button data-page="about">ℹ️ About</button>
+  <button id="logoutBtn">🚪 Logout</button>
+</div>
+
+<div class="main">
+
+<!-- DASHBOARD -->
+<div id="dash" class="page active">
+  <div class="card">
+    <input id="title" placeholder="Expense title">
+    <input id="amount" type="number" placeholder="Amount">
+    <select id="category">
+      <option value="">Select Category</option>
+      <option>Food</option><option>Travel</option>
+      <option>Education</option><option>Entertainment</option>
+      <option>Other</option>
+    </select>
+    <button class="action" id="addBtn">➕ Add Expense</button>
+
+    <div class="stats">
+      <div class="stat"><h3 id="total">₹0</h3>Total</div>
+      <div class="stat"><h3 id="count">0</h3>Records</div>
+      <div class="stat"><h3 id="max">₹0</h3>Highest</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="chart-box">
+      <canvas id="expenseChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORY -->
+<div id="history" class="page">
+  <div class="card">
+    <input type="date" id="historyDate">
+    <table width="100%">
+      <thead>
+        <tr><th>Title</th><th>Amount</th><th>Category</th><th>Date</th></tr>
+      </thead>
+      <tbody id="list"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<div id="about" class="page">
+  <div class="card">
+    <p style="line-height:1.8;color:#444">
+      EXPENSE F is a modern and intuitive expense tracking web application designed to help users manage their daily finances in a simple, organized, and efficient way. The application offers secure login and registration, expense categorization, date-wise expense history with calendar filtering, and daily expense analytics through clean visual charts that automatically reset after midnight while preserving complete historical records. EXPENSE F is built with a responsive, mobile-friendly interface, smooth navigation, and subtle aesthetic lighting to provide a professional and polished user experience. This project was created by Faizan as a practical, real-world application to strengthen frontend development skills and UI/UX design understanding, focusing on clarity, usability, and performance. The goal of EXPENSE F is to make personal expense tracking effortless, visually clear, and accessible for everyday users while showcasing thoughtful design and solid development fundamentals.
+    </p>
+    <p style="font-size:14px;color:#666;margin-top:20px">
+      Version 1.0 · Built with HTML, CSS, JavaScript · © 2026
+    </p>
+  </div>
+</div>
+
+</div>
+
+<script>
+const menu = document.getElementById("menu");
+const menuBtn = document.getElementById("menuBtn");
+
+menuBtn.onclick = () => {
+  menu.style.display = menu.style.display === "flex" ? "none" : "flex";
+};
+
+/* PAGE NAV */
+document.querySelectorAll(".menu button[data-page]").forEach(btn=>{
+  btn.onclick = () => {
+    document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+    document.getElementById(btn.dataset.page).classList.add("active");
+    document.querySelectorAll(".menu button").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    menu.style.display="none";
+  };
+});
+
+/* LOGOUT */
+document.getElementById("logoutBtn").onclick = ()=>{
+  localStorage.removeItem("currentUser");
+  location.href="login.html";
+};
+
+/* DATA */
+let users = JSON.parse(localStorage.getItem("users"))||{};
+let user = localStorage.getItem("currentUser");
+let data = users[user].expenses || [];
+let chart;
+
+/* ADD */
+addBtn.onclick = ()=>{
+  if(!category.value) return;
+  data.push({
+    title:title.value,
+    amount:+amount.value,
+    category:category.value,
+    date:new Date().toISOString().slice(0,10)
+  });
+  title.value=amount.value="";category.value="";
+  users[user].expenses=data;
+  localStorage.setItem("users",JSON.stringify(users));
+  render();
+};
+
+/* RENDER */
+function render(){
+  let t=0,m=0;
+  let today=new Date().toISOString().slice(0,10);
+  let cat={Food:0,Travel:0,Education:0,Entertainment:0,Other:0};
+  list.innerHTML="";
+
+  data.forEach(e=>{
+    t+=e.amount;m=Math.max(m,e.amount);
+    list.innerHTML+=`<tr><td>${e.title}</td><td>₹${e.amount}</td><td>${e.category}</td><td>${e.date}</td></tr>`;
+    if(e.date===today) cat[e.category]+=e.amount;
+  });
+
+  total.innerText="₹"+t;
+  count.innerText=data.length;
+  max.innerText="₹"+m;
+
+  if(chart) chart.destroy();
+  chart=new Chart(expenseChart,{
+    type:"doughnut",
+    data:{labels:Object.keys(cat),datasets:[{data:Object.values(cat)}]},
+    options:{cutout:"78%"}
+  });
+}
+render();
+/* WELCOME MESSAGE – once per session */
+if(!sessionStorage.getItem("welcomed")){
+  setTimeout(()=>{
+    const toast = document.getElementById("welcomeToast");
+    if(toast) toast.style.opacity = 1;
+    sessionStorage.setItem("welcomed","yes");
+  },500);
+}
+/* WELCOME MESSAGE – once per session */
+if(!sessionStorage.getItem("welcomed")){
+  setTimeout(()=>{
+    const toast = document.getElementById("welcomeToast");
+    if(toast) toast.style.opacity = 1;
+    sessionStorage.setItem("welcomed","yes");
+  },500);
+}
+
+</script>
+
+</body>
+</html>
