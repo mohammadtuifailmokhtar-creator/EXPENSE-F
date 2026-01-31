@@ -258,14 +258,48 @@ let data = users[user].expenses || [];
   let budget = localStorage.getItem(user+"_budget") || 0;
 
 let chart;
-  /* BUDGET SYSTEM */
-let userBudget = localStorage.getItem("budget_"+user) || 0;
+  /* ===== BUDGET SYSTEM ===== */
 
-function setBudget(){
-  userBudget = document.getElementById("budget").value;
-  localStorage.setItem("budget_"+user,userBudget);
-  alert("✅ Budget Set!");
+setBudget.onclick = ()=>{
+  localStorage.setItem(user+"_budget", Number(budget.value));
+  alert("✅ Budget Saved!");
+  checkBudget();
+};
+
+function checkBudget(){
+  let totalSpent = data.reduce((a,b)=>a+b.amount,0);
+  let b = localStorage.getItem(user+"_budget");
+
+  if(!b) return;
+  b = Number(b);
+
+  let percent = (totalSpent/b)*100;
+
+  /* ALERTS */
+  if(totalSpent >= b){
+    alert("🚨 Budget Exceeded!");
+  }
+  else if(totalSpent >= b*0.8){
+    alert("⚠️ 80% Budget Used!");
+  }
+
+  /* BAR */
+  let bar = document.getElementById("budgetBar");
+  let text = document.getElementById("budgetText");
+
+  if(bar){
+    bar.style.width = Math.min(percent,100)+"%";
+
+    if(percent < 50) bar.style.background="#22c55e";
+    else if(percent < 80) bar.style.background="#f59e0b";
+    else bar.style.background="#ef4444";
+  }
+
+  if(text){
+    text.innerText = `₹${totalSpent} / ₹${b} used`;
+  }
 }
+
 
 function checkBudget(){
   let totalSpend = 0;
@@ -276,23 +310,27 @@ function checkBudget(){
   }
 }
 
+/* ===== add button ===== */
 
-/* ADD */
-addBtn.onclick = ()=>{
-  if(!category.value) return;
+  addBtn.onclick = ()=>{
+  if(!category.value || !amount.value) return;
+
   data.push({
     title:title.value,
     amount:+amount.value,
     category:category.value,
     date:new Date().toISOString().slice(0,10)
   });
-  
-  checkBudget();
 
-  title.value=amount.value="";category.value="";
-  users[user].expenses=data;
+  users[user].expenses = data;
   localStorage.setItem("users",JSON.stringify(users));
+
+  title.value=amount.value="";
+  category.value="";
+
   render();
+};
+
   /* BUDGET SYSTEM */
 setBudget.onclick = ()=>{
   localStorage.setItem(user+"_budget",budget.value);
@@ -373,6 +411,7 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
 
