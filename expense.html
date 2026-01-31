@@ -168,6 +168,9 @@ button.action{
       <option>Other</option>
     </select>
     <button class="action" id="addBtn">➕ Add Expense</button>
+    <input id="budget" type="number" placeholder="Set Monthly Budget ₹">
+<button class="action" onclick="setBudget()">💰 Set Budget</button>
+
 
     <div class="stats">
       <div class="stat"><h3 id="total">₹0</h3>Total</div>
@@ -240,6 +243,24 @@ let users = JSON.parse(localStorage.getItem("users"))||{};
 let user = localStorage.getItem("currentUser");
 let data = users[user].expenses || [];
 let chart;
+  /* BUDGET SYSTEM */
+let userBudget = localStorage.getItem("budget_"+user) || 0;
+
+function setBudget(){
+  userBudget = document.getElementById("budget").value;
+  localStorage.setItem("budget_"+user,userBudget);
+  alert("✅ Budget Set!");
+}
+
+function checkBudget(){
+  let totalSpend = 0;
+  data.forEach(e=> totalSpend += e.amount);
+
+  if(userBudget>0 && totalSpend > userBudget){
+    alert("⚠️ Budget Exceeded!");
+  }
+}
+
 
 /* ADD */
 addBtn.onclick = ()=>{
@@ -254,6 +275,8 @@ addBtn.onclick = ()=>{
   users[user].expenses=data;
   localStorage.setItem("users",JSON.stringify(users));
   render();
+  checkBudget();
+
 };
 
 /* RENDER */
@@ -311,5 +334,6 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
