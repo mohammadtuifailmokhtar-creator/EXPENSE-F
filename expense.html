@@ -339,23 +339,10 @@ function render(){
     data:{labels:Object.keys(cat),datasets:[{data:Object.values(cat)}]},
     options:{cutout:"78%"}
   });
+  checkBudget();
+
 }
 render();
-  // Budget Progress
-let b = localStorage.getItem(user+"_budget");
-if(b){
-  let percent = (t/b)*100;
-  percent = Math.min(percent,100);
-
-  document.getElementById("budgetBar").style.width = percent+"%";
-  document.getElementById("budgetText").innerText =
-    `₹${t} spent of ₹${b}`;
-
-  if(percent>=100){
-    document.getElementById("budgetBar").style.background="#ef4444";
-  }
-}
-
 /* WELCOME MESSAGE – once per session */
 if(!sessionStorage.getItem("welcomed")){
   setTimeout(()=>{
@@ -386,6 +373,7 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
 
