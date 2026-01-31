@@ -167,6 +167,9 @@ button.action{
       <option>Education</option><option>Entertainment</option>
       <option>Other</option>
     </select>
+    <input id="budget" type="number" placeholder="Set Monthly Budget">
+<button class="action" id="setBudget">💰 Save Budget</button>
+
     <button class="action" id="addBtn">➕ Add Expense</button>
     <input id="budget" type="number" placeholder="Set Monthly Budget ₹">
 <button class="action" onclick="setBudget()">💰 Set Budget</button>
@@ -242,6 +245,8 @@ document.getElementById("logoutBtn").onclick = ()=>{
 let users = JSON.parse(localStorage.getItem("users"))||{};
 let user = localStorage.getItem("currentUser");
 let data = users[user].expenses || [];
+  let budget = localStorage.getItem(user+"_budget") || 0;
+
 let chart;
   /* BUDGET SYSTEM */
 let userBudget = localStorage.getItem("budget_"+user) || 0;
@@ -271,10 +276,32 @@ addBtn.onclick = ()=>{
     category:category.value,
     date:new Date().toISOString().slice(0,10)
   });
+  
+  checkBudget();
+
   title.value=amount.value="";category.value="";
   users[user].expenses=data;
   localStorage.setItem("users",JSON.stringify(users));
   render();
+  /* BUDGET SYSTEM */
+setBudget.onclick = ()=>{
+  localStorage.setItem(user+"_budget",budget.value);
+  alert("Budget Saved!");
+};
+
+function checkBudget(){
+  let totalSpent = data.reduce((a,b)=>a+b.amount,0);
+  let b = localStorage.getItem(user+"_budget");
+
+  if(!b) return;
+
+  if(totalSpent >= b){
+    alert("🚨 Budget Exceeded!");
+  } else if(totalSpent >= b*0.8){
+    alert("⚠️ 80% Budget Used!");
+  }
+}
+
   checkBudget();
 
 };
@@ -334,6 +361,7 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
 
