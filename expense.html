@@ -172,6 +172,18 @@ button.action{
 
     <button class="action" id="addBtn">➕ Add Expense</button>
 
+<div class="card">
+  <h4>Budget Usage</h4>
+  <div style="background:#e5e7ff;border-radius:20px;overflow:hidden">
+    <div id="budgetBar" style="
+      height:18px;
+      width:0%;
+      background:linear-gradient(90deg,#22c55e,#ef4444);
+      transition:.4s;
+    "></div>
+  </div>
+  <p id="budgetText" style="margin-top:8px;font-size:14px"></p>
+</div>
 
     <div class="stats">
       <div class="stat"><h3 id="total">₹0</h3>Total</div>
@@ -329,6 +341,21 @@ function render(){
   });
 }
 render();
+  // Budget Progress
+let b = localStorage.getItem(user+"_budget");
+if(b){
+  let percent = (t/b)*100;
+  percent = Math.min(percent,100);
+
+  document.getElementById("budgetBar").style.width = percent+"%";
+  document.getElementById("budgetText").innerText =
+    `₹${t} spent of ₹${b}`;
+
+  if(percent>=100){
+    document.getElementById("budgetBar").style.background="#ef4444";
+  }
+}
+
 /* WELCOME MESSAGE – once per session */
 if(!sessionStorage.getItem("welcomed")){
   setTimeout(()=>{
@@ -359,6 +386,7 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
 
