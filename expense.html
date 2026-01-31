@@ -324,24 +324,29 @@ function checkBudget(){
 
 /* ===== add button ===== */
 
-  addBtn.onclick = ()=>{
-  if(!category.value || !amount.value) return;
+addBtn.onclick = ()=>{
+  if(!title.value || !amount.value || !category.value){
+    alert("❗ Please fill all fields");
+    return;
+  }
 
   data.push({
-    title:title.value,
-    amount:+amount.value,
-    category:category.value,
-    date:new Date().toISOString().slice(0,10)
+    title: title.value,
+    amount: Number(amount.value),
+    category: category.value,
+    date: new Date().toISOString().slice(0,10)
   });
 
   users[user].expenses = data;
-  localStorage.setItem("users",JSON.stringify(users));
+  localStorage.setItem("users", JSON.stringify(users));
 
-  title.value=amount.value="";
-  category.value="";
+  title.value = "";
+  amount.value = "";
+  category.value = "";
 
   render();
 };
+
 
   /* BUDGET SYSTEM */
 setBudget.onclick = ()=>{
@@ -423,6 +428,7 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
 
