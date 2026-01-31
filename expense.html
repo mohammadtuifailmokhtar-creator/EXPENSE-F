@@ -258,6 +258,18 @@ let data = users[user].expenses || [];
   let budget = localStorage.getItem(user+"_budget") || 0;
 
 let chart;
+  const addBtn = document.getElementById("addBtn");
+const setBudget = document.getElementById("setBudget");
+const title = document.getElementById("title");
+const amount = document.getElementById("amount");
+const category = document.getElementById("category");
+const budget = document.getElementById("budget");
+const list = document.getElementById("list");
+const total = document.getElementById("total");
+const count = document.getElementById("count");
+const max = document.getElementById("max");
+const expenseChart = document.getElementById("expenseChart");
+
   /* ===== BUDGET SYSTEM ===== */
 
 setBudget.onclick = ()=>{
@@ -411,6 +423,7 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
 
