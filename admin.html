@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Expense F Admin</title>
+
+<style>
+body{
+  font-family:Poppins;
+  background:#eef2ff;
+  margin:0;
+}
+
+header{
+  background:#6366f1;
+  color:white;
+  padding:15px;
+  text-align:center;
+  font-size:20px;
+}
+
+.card{
+  background:white;
+  margin:20px;
+  padding:20px;
+  border-radius:15px;
+  box-shadow:0 10px 30px rgba(0,0,0,.1);
+}
+
+input{
+  width:100%;
+  padding:12px;
+  margin:8px 0;
+  border-radius:10px;
+  border:1px solid #ccc;
+}
+
+button{
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  background:#6366f1;
+  color:white;
+  cursor:pointer;
+}
+
+.user{
+  padding:10px;
+  background:#f3f4ff;
+  margin:6px 0;
+  border-radius:8px;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<header>Expense F Admin Panel</header>
+
+<!-- LOGIN -->
+<div class="card" id="loginBox">
+<h3>Admin Login</h3>
+
+<input id="adminUser" placeholder="Admin ID">
+<input id="adminPass" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+</div>
+
+<!-- DASHBOARD -->
+<div class="card" id="dash" style="display:none">
+<h3>All Users</h3>
+<div id="usersList"></div>
+
+<h3>User Expenses</h3>
+<div id="dataBox"></div>
+</div>
+
+<script>
+function login(){
+  let u=adminUser.value;
+  let p=adminPass.value;
+
+  if(u==="admin" && p==="admin123"){
+    loginBox.style.display="none";
+    dash.style.display="block";
+    loadUsers();
+  } else{
+    alert("Wrong Admin Login");
+  }
+}
+
+function loadUsers(){
+  let users=JSON.parse(localStorage.getItem("users"))||{};
+  usersList.innerHTML="";
+
+  Object.keys(users).forEach(name=>{
+    let div=document.createElement("div");
+    div.className="user";
+    div.innerText=name;
+    div.onclick=()=>showData(name);
+    usersList.appendChild(div);
+  });
+}
+
+function showData(name){
+  let users=JSON.parse(localStorage.getItem("users"));
+  let exp=users[name].expenses||[];
+
+  dataBox.innerHTML="<b>"+name+"'s Expenses:</b><br>";
+
+  exp.forEach(e=>{
+    dataBox.innerHTML+=`
+      ${e.title} - ₹${e.amount} - ${e.category} - ${e.date}<br>
+    `;
+  });
+}
+</script>
+
+</body>
+</html>
