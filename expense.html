@@ -134,8 +134,6 @@ button.action{
 }
 
 </style>
-  <link rel="manifest" href="/manifest.json">
-
 </head>
 
 <body>
@@ -167,23 +165,7 @@ button.action{
       <option>Education</option><option>Entertainment</option>
       <option>Other</option>
     </select>
-    <input id="budget" type="number" placeholder="Set Monthly Budget">
-<button class="action" id="setBudget">💰 Save Budget</button>
-
     <button class="action" id="addBtn">➕ Add Expense</button>
-
-<div class="card">
-  <h4>Budget Usage</h4>
-  <div style="background:#e5e7ff;border-radius:20px;overflow:hidden">
-    <div id="budgetBar" style="
-      height:18px;
-      width:0%;
-      background:linear-gradient(90deg,#22c55e,#ef4444);
-      transition:.4s;
-    "></div>
-  </div>
-  <p id="budgetText" style="margin-top:8px;font-size:14px"></p>
-</div>
 
     <div class="stats">
       <div class="stat"><h3 id="total">₹0</h3>Total</div>
@@ -255,121 +237,21 @@ document.getElementById("logoutBtn").onclick = ()=>{
 let users = JSON.parse(localStorage.getItem("users"))||{};
 let user = localStorage.getItem("currentUser");
 let data = users[user].expenses || [];
-  let budget = localStorage.getItem(user+"_budget") || 0;
-
 let chart;
-  const addBtn = document.getElementById("addBtn");
-const setBudget = document.getElementById("setBudget");
-const title = document.getElementById("title");
-const amount = document.getElementById("amount");
-const category = document.getElementById("category");
-const budget = document.getElementById("budget");
-const list = document.getElementById("list");
-const total = document.getElementById("total");
-const count = document.getElementById("count");
-const max = document.getElementById("max");
-const expenseChart = document.getElementById("expenseChart");
 
-  /* ===== BUDGET SYSTEM ===== */
-
-setBudget.onclick = ()=>{
-  localStorage.setItem(user+"_budget", Number(budget.value));
-  alert("✅ Budget Saved!");
-  checkBudget();
-};
-
-function checkBudget(){
-  let totalSpent = data.reduce((a,b)=>a+b.amount,0);
-  let b = localStorage.getItem(user+"_budget");
-
-  if(!b) return;
-  b = Number(b);
-
-  let percent = (totalSpent/b)*100;
-
-  /* ALERTS */
-  if(totalSpent >= b){
-    alert("🚨 Budget Exceeded!");
-  }
-  else if(totalSpent >= b*0.8){
-    alert("⚠️ 80% Budget Used!");
-  }
-
-  /* BAR */
-  let bar = document.getElementById("budgetBar");
-  let text = document.getElementById("budgetText");
-
-  if(bar){
-    bar.style.width = Math.min(percent,100)+"%";
-
-    if(percent < 50) bar.style.background="#22c55e";
-    else if(percent < 80) bar.style.background="#f59e0b";
-    else bar.style.background="#ef4444";
-  }
-
-  if(text){
-    text.innerText = `₹${totalSpent} / ₹${b} used`;
-  }
-}
-
-
-function checkBudget(){
-  let totalSpend = 0;
-  data.forEach(e=> totalSpend += e.amount);
-
-  if(userBudget>0 && totalSpend > userBudget){
-    alert("⚠️ Budget Exceeded!");
-  }
-}
-
-/* ===== add button ===== */
-addBtn.onclick = ()=> alert("clicked");
-
+/* ADD */
 addBtn.onclick = ()=>{
-  if(!title.value || !amount.value || !category.value){
-    alert("❗ Please fill all fields");
-    return;
-  }
-
+  if(!category.value) return;
   data.push({
-    title: title.value,
-    amount: Number(amount.value),
-    category: category.value,
-    date: new Date().toISOString().slice(0,10)
+    title:title.value,
+    amount:+amount.value,
+    category:category.value,
+    date:new Date().toISOString().slice(0,10)
   });
-
-  users[user].expenses = data;
-  localStorage.setItem("users", JSON.stringify(users));
-
-  title.value = "";
-  amount.value = "";
-  category.value = "";
-
+  title.value=amount.value="";category.value="";
+  users[user].expenses=data;
+  localStorage.setItem("users",JSON.stringify(users));
   render();
-};
-
-
-  /* BUDGET SYSTEM */
-setBudget.onclick = ()=>{
-  localStorage.setItem(user+"_budget",budget.value);
-  alert("Budget Saved!");
-};
-
-function checkBudget(){
-  let totalSpent = data.reduce((a,b)=>a+b.amount,0);
-  let b = localStorage.getItem(user+"_budget");
-
-  if(!b) return;
-
-  if(totalSpent >= b){
-    alert("🚨 Budget Exceeded!");
-  } else if(totalSpent >= b*0.8){
-    alert("⚠️ 80% Budget Used!");
-  }
-}
-
-  checkBudget();
-
 };
 
 /* RENDER */
@@ -395,8 +277,6 @@ function render(){
     data:{labels:Object.keys(cat),datasets:[{data:Object.values(cat)}]},
     options:{cutout:"78%"}
   });
-  checkBudget();
-
 }
 render();
 /* WELCOME MESSAGE – once per session */
@@ -417,26 +297,6 @@ if(!sessionStorage.getItem("welcomed")){
 }
 
 </script>
-<script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/service-worker.js")
-      .then(() => console.log("Service Worker Registered"))
-      .catch(err => console.error("Service Worker Error", err));
-  });
-}
-</script>
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
